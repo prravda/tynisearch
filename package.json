@@ -2,7 +2,7 @@
   "name": "tynisearch",
   "version": "1.0.0",
   "description": "Tiny search module based on `trie` and `aho-corasick` using TypeScript",
-  "main": "tynisearch.ts",
+  "main": "index.ts",
   "scripts": {
     "test": "jest",
     "prepare": "husky install"
@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/prravda/tynisearch#readme",
   "dependencies": {
+    "tynisearch": "^1.0.0",
     "typescript": "^5.2.2"
   },
   "devDependencies": {
