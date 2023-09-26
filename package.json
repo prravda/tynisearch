@@ -1,6 +1,6 @@
 {
   "name": "tynisearch",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Tiny search module based on `trie` and `aho-corasick` using TypeScript",
   "main": "dist/index.ts",
   "types": "dist/index.d.ts",
