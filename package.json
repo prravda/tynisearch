@@ -20,9 +20,16 @@
     "aho-corasick",
     "trie",
     "search",
+    "searching",
     "match",
+    "matching",
     "word match",
-    "text search"
+    "word matching",
+    "text search",
+    "text searching",
+    "serialze",
+    "serializing",
+    "serialization"
   ],
   "author": {
     "name": "prravda",
