@@ -2,11 +2,15 @@
   "name": "tynisearch",
   "version": "1.0.2",
   "description": "Tiny search module based on `trie` and `aho-corasick` using TypeScript",
-  "main": "index.js",
+  "main": "dist/index.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
     "prepare": "husky install"
   },
+  "files": [
+    "/dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/prravda/tynisearch.git"
@@ -38,6 +42,6 @@
     "ts-jest": "^29.1.1"
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "src": "prettier --write --ignore-unknown"
   }
 }

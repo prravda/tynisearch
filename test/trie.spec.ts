@@ -1,4 +1,4 @@
-import { TyniSearch } from "../tynisearch";
+import { TyniSearch } from "../src/tynisearch";
 import {
   ExampleTitleAndExpectedKeywordList,
   KeywordListForTesting,
