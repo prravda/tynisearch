@@ -2,16 +2,17 @@ import { TrieNode } from "./trie";
 export declare class TyniSearch {
     rootNode: TrieNode;
     constructor(rootNode?: TrieNode);
-    toJSON(): Record<string, any>;
-    toJSONIteratively(): Record<string, any>;
-    toJSONRecursively(): Record<string, any>;
-    static fromJSON(jsonData: Record<string, any>): TyniSearch;
-    static fromJSONRecursively(jsonData: Record<string, any>): TyniSearch;
-    static fromJSONIteratively(jsonData: Record<string, any>): TyniSearch;
+    serialize(): string;
+    static deserialize(serializedData: string): TyniSearch;
     private charToIndex;
-    insert(keyword: string): void;
-    delete(keyword: string): void;
-    buildFailureLinks(): void;
+    private buildFailureLinks;
+    private insertKeyword;
+    insert(keywords: string[]): void;
+    private deleteKeyword;
+    delete(keywords: string[]): void;
     searchKeyword(keyword: string): boolean;
     searchInSentence(sentence: string): string[];
+    private countNodesRecursive;
+    getNumberOfNodes(): number;
+    getAllKeywords(): string[];
 }

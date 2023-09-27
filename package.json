@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest --verbose",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "build": "rm -rf /dist && tsc"
   },
   "files": [
     "/dist"
