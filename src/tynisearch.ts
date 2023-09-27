@@ -1,24 +1,15 @@
 import { TrieNode } from "./trie";
-import { trampoline } from "./trampoline";
 
 export class TyniSearch {
   rootNode: TrieNode;
   constructor(rootNode?: TrieNode) {
     this.rootNode = rootNode ? rootNode : new TrieNode();
   }
-  public toJSON(): Record<string, any> {
-    return this.rootNode.toJSON();
+  public serialize(): string {
+    return JSON.stringify(this.rootNode.toJSON());
   }
 
-  public toJSONIteratively(): Record<string, any> {
-    return this.rootNode.toJSONIteratively();
-  }
-
-  public toJSONRecursively(): Record<string, any> {
-    return this.rootNode.toJSONWithRecursively();
-  }
-
-  public static fromJSON(jsonData: Record<string, any>): TyniSearch {
+  public static deserialize(serializedData: string): TyniSearch {
     const trie = new TyniSearch();
     trie.rootNode.children = new Map<string, TrieNode>();
 
@@ -39,62 +30,10 @@ export class TyniSearch {
       }
     };
 
+    const jsonData = JSON.parse(serializedData);
     buildTrieFromJSON(jsonData, trie.rootNode);
-    return trie;
-  }
 
-  public static fromJSONRecursively(jsonData: Record<string, any>) {
-    const rootNode = new TrieNode();
-
-    const buildTrieFromJSONTrampoline = (
-      trieNodeData: Record<string, any>,
-      trieNode: TrieNode,
-    ) => {
-      return function () {
-        trieNode.isLastWord = trieNodeData.isLastWord;
-        trieNode.output = new Set(trieNodeData.output);
-        trieNode.fail = trieNodeData.fail;
-
-        for (const charCode in trieNodeData.children) {
-          const childData = trieNodeData.children[charCode];
-          const childTrieNode = new TrieNode();
-          trieNode.children.set(charCode, childTrieNode);
-
-          buildTrieFromJSONTrampoline(childData, childTrieNode)();
-        }
-      };
-    };
-
-    const trampolinedBuildTrieFromJSON = trampoline(
-      buildTrieFromJSONTrampoline(jsonData, rootNode),
-    );
-    trampolinedBuildTrieFromJSON();
-
-    return new TyniSearch(rootNode);
-  }
-
-  public static fromJSONIteratively(jsonData: Record<string, any>): TyniSearch {
-    const trie = new TyniSearch();
-    trie.rootNode.children = new Map<string, TrieNode>();
-
-    const stack: { node: TrieNode; trieNodeData: Record<string, any> }[] = [
-      { node: trie.rootNode, trieNodeData: jsonData },
-    ];
-
-    while (stack.length > 0) {
-      const { node, trieNodeData } = stack.pop()!;
-      node.isLastWord = trieNodeData.isLastWord;
-      node.output = new Set(trieNodeData.output);
-      node.fail = trieNodeData.fail;
-
-      for (const charCode in trieNodeData.children) {
-        const childData = trieNodeData.children[charCode];
-        const childTrieNode = new TrieNode();
-        node.children.set(charCode, childTrieNode);
-
-        stack.push({ node: childTrieNode, trieNodeData: childData });
-      }
-    }
+    trie.buildFailureLinks();
 
     return trie;
   }
@@ -103,7 +42,33 @@ export class TyniSearch {
     return String(character.charCodeAt(0));
   }
 
-  public insert(keyword: string): void {
+  private buildFailureLinks(): void {
+    const queue: TrieNode[] = [];
+    this.rootNode.fail = null;
+
+    for (const child of this.rootNode.children.values()) {
+      child.fail = this.rootNode;
+      queue.push(child);
+    }
+
+    while (queue.length > 0) {
+      const node = queue.shift()!;
+
+      for (const [charCode, child] of node.children) {
+        let failure = node.fail;
+
+        while (failure !== null && !failure.children.has(charCode)) {
+          failure = failure.fail!;
+        }
+
+        child.fail = failure?.children.get(charCode) || this.rootNode;
+        child.output = new Set([...child.output, ...child.fail.output]);
+        queue.push(child);
+      }
+    }
+  }
+
+  private insertKeyword(keyword: string): void {
     let currentRoot = this.rootNode;
     for (const character of keyword) {
       const indexOfCharacter = this.charToIndex(character);
@@ -117,7 +82,12 @@ export class TyniSearch {
     currentRoot.output.add(keyword);
   }
 
-  public delete(keyword: string) {
+  public insert(keywords: string[]): void {
+    keywords.forEach((keyword) => this.insertKeyword(keyword));
+    this.buildFailureLinks();
+  }
+
+  private deleteKeyword(keyword: string): void {
     let currentRoot = this.rootNode;
     const parentStack: TrieNode[] = [];
 
@@ -160,30 +130,9 @@ export class TyniSearch {
     }
   }
 
-  public buildFailureLinks(): void {
-    const queue: TrieNode[] = [];
-    this.rootNode.fail = null;
-
-    for (const child of this.rootNode.children.values()) {
-      child.fail = this.rootNode;
-      queue.push(child);
-    }
-
-    while (queue.length > 0) {
-      const node = queue.shift()!;
-
-      for (const [charCode, child] of node.children) {
-        let failure = node.fail;
-
-        while (failure !== null && !failure.children.has(charCode)) {
-          failure = failure.fail!;
-        }
-
-        child.fail = failure?.children.get(charCode) || this.rootNode;
-        child.output = new Set([...child.output, ...child.fail.output]);
-        queue.push(child);
-      }
-    }
+  public delete(keywords: string[]) {
+    keywords.forEach((keyword) => this.deleteKeyword(keyword));
+    this.buildFailureLinks();
   }
 
   public searchKeyword(keyword: string): boolean {
@@ -222,5 +171,34 @@ export class TyniSearch {
     }
 
     return [...keywordsFound];
+  }
+
+  private countNodesRecursive(node: TrieNode): number {
+    let count = 1;
+
+    for (const child of node.children.values()) {
+      count += this.countNodesRecursive(child);
+    }
+
+    return count;
+  }
+
+  public getNumberOfNodes(): number {
+    return this.countNodesRecursive(this.rootNode);
+  }
+
+  public getAllKeywords(): string[] {
+    const stack: TrieNode[] = [this.rootNode];
+    const keywords: string[] = [];
+
+    while (stack.length > 0) {
+      const node = stack.pop()!;
+      if (node.isLastWord) {
+        keywords.push([...node.output][0]);
+      }
+      node.children.forEach((child) => stack.push(child));
+    }
+
+    return keywords;
   }
 }

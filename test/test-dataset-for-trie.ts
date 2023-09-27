@@ -247,18 +247,18 @@ export const ExampleTitleAndExpectedKeywordList: TitleAndExpectedKeywordList[] =
   ];
 
 interface TestSuiteForDeletion {
-  keywordToDelete: string;
+  keywordToDelete: string[];
   expectedKeywordList: string[];
   title: string;
 }
 export const TestSuiteForDelete: TestSuiteForDeletion[] = [
   {
-    keywordToDelete: "삼겹살",
+    keywordToDelete: ["삼겹살", "보먹돼"],
     title: "보먹돼 삼겹살/목살 할인",
-    expectedKeywordList: ["보먹돼", "목살"],
+    expectedKeywordList: ["목살"],
   },
   {
-    keywordToDelete: "keywordDoesNotExist",
+    keywordToDelete: ["keywordDoesNotExist"],
     title: "보먹돼 삼겹살/목살 할인",
     expectedKeywordList: ["보먹돼", "목살", "삼겹살"],
   },
