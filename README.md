@@ -4,6 +4,13 @@
 
 # Use case
 - I made this library for searching keywords my users enrolled from a title of a post without search engine library.
+## For me?
+- Making trie based on keywords of users
+- Save the serialized trie into in memory k-v storage like `Redis`.
+- Retrieve the serialized trie from the storage and de-serialize it when.
+  - User enrolled new keywords
+  - User deleted existed keywords
+- Search keywords in a title of a post using de-serialized trie
 
 # Installation
 ```shell
