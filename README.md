@@ -1,5 +1,9 @@
 # About
-Tiny search module based on `trie` and `aho-corasick` using TypeScript
+- Tiny, and simple search module based on `trie` and `aho-corasick` using TypeScript. 
+- Also, it supports serialization and de-serialization into `string` type.
+
+# Use case
+- I made this library for searching keywords my users enrolled from a title of a post without search engine library.
 
 # Installation
 ```shell
@@ -7,70 +11,61 @@ npm install tynisearch
 ```
 
 # Example
-## Insert keywords and search them in a sentence
+## Insert and delete
 ```typescript
 import { TyniSearch } from 'tynisearch';
 
 const tyniSearch = new TyniSearch();
 
-const wordList = ["fox", "dog"]
+const words = ["fox", "dog"]
 const titleToSearch = "The quick brown fox jumps over the lazy dog";
 
-wordList.forEach(word => tyniSearch.insert(word));
-
-tyniSearch.buildFailureLinks();
+// insert words as a list
+tyniSearch.insert(words);
 
 const result = tyniSearch.searchInSentence(titleToSearch); 
 console.log(result); // ["fox", "dog"]
+
+// delete words as a list
+tyniSearch.delete(words);
+
+const resultAfterDeletion = tyniSearch.searchInSentence(titleToSearch);
+console.log(resultAfterDeletion); // []
 ```
 
-## Serialization and De-serialization
-### Serialization
+## Serialization and De-serialization (SerDe)
 ```typescript
 const tyniSearch = new TyniSearch();
 
 const wordList = ["fox", "dog"]
 const titleToSearch = "The quick brown fox jumps over the lazy dog";
 
-wordList.forEach(word => tyniSearch.insert(word));
+// insert words as a list
+tyniSearch.insert(words);
 
-tyniSearch.buildFailureLinks();
+// serialize to string
+const ser = tyniSearch.serialize();
 
-const result = tyniSearch.searchInSentence(titleToSearch);
+// de-serialize from serialized string
+const de = TyniSearch.deserialize(ser);
+
+// search in de-serialized trie
+const result = de.serialize(titleToSearch);
 console.log(result); // ["fox", "dog"]
-
-// Basic way, make an object (Record<string, any>) recursively 
-// except each trie nodes's failure links
-const readyForBeParsedInJSON = tyniSearch.toJSON();
-const stringified = JSON.stringify(readyForBeParsedInJSON);
-
-// Iterative way, make object iteratively
-const readyForBeParsedInJSONIteratively = tyniSearch.toJSONIteratively();
-const stringifiedIteratively = JSON.stringify(readyForBeParsedInJSONIteratively);
-
-// Recursive way, run recursive function with trampoline
-const readyForBeParsedInJSONRecursively = tyniSearch.toJSONIteratively();
-const stringifiedRecursively = JSON.stringify(readyForBeParsedInJSONRecursively);
 ```
 
-### De-serialization
+## Misc.
 ```typescript
-// Getting one of the serialized results...
-const tyniSearchFromSerialized = TyniSearch.fromJSON(readyForBeParsedInJSON);
+const tyniSearch = new TyniSearch();
+const words = ["fox", "dog"]
+tyniSearch.insert(words);
 
-// Also implemented the de-serialization 
-// with iteration and recursion with trampoline
-const tyniSearchFromSerializedIteratively = TyniSearch.fromJSONIteratively(readyForBeParsedInJSON);
-const tyniSearchFromSerializedRecursively = TyniSearch.fromJSONRecursively(readyForBeParsedInJSON);
+// getting the number of all nodes
+tyniSearch.getNumberOfNodes(); // 2
 
-// Then, you can search with the de-serialized trie
-// after building failure links again
-tyniSearchFromSerialized.buildFailureLinks();
+// getting all saved keywords in trie
+tyniSearch.getAllKeywords(); // ["fox", "dog"]
 
-const titleToSearch = "The quick brown fox jumps over the lazy dog";
-
-const result = tyniSearchFromSerialized.searchInSentence(titleToSearch);
-console.log(result); // ["fox", "dog"]
 ```
 
 ---
@@ -83,7 +78,7 @@ You should build failure links using `.buildFailureLinks()` again after de-seria
 
 **Or, you can contribute to this project to solve this problem (I really want it!)**
 
-## Calculate failure graph
+## Calculating the failure links is not efficient
 I think it is also better way to calculate failure graph when building failure links. 
 
 Currently, building failure graph is required after every insertion. In other words, you should call `.buildFailureLinks()` before run `searchInSentence(sentence: string)` method after any new words are inserted into.
