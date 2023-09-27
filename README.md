@@ -10,6 +10,24 @@
 npm install tynisearch
 ```
 
+# Benchmark
+## TL;DR
+![result-of-dataset](./statics/result-of-benchmark.png)
+
+## In table
+| **Calculation**                              | **Elapsed time (ms)** |
+|----------------------------------------------|-----------------------|
+| Searching                                    | 1                     |
+| Inserting (including building failure links) | 60                    |
+| Serialization and de-serialization           | 90                    |
+## Dataset Description
+- 10,000 words, which consisted of words longer than 5 characters
+  - You can see the whole [dataset](./test/dataset.txt)
+## Test Description
+- You can see the performance test code [here](./test/tynisearch-performance.spec.ts)
+
+
+
 # Example
 ## Insert and delete
 ```typescript
