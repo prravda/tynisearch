@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest --verbose",
     "prepare": "husky install",
-    "build": "rm -rf /dist && tsc"
+    "build": "rm -rf dist/ && tsc"
   },
   "files": [
     "/dist"
