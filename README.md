@@ -29,9 +29,9 @@ npm install tynisearch
 | Serialization and de-serialization           | 90                    |
 ## Dataset Description
 - 10,000 words, which consisted of words longer than 5 characters
-  - You can see the whole [dataset](./test/dataset.txt)
+  - You can see the whole [dataset](tests/dataset.txt)
 ## Test Description
-- You can see the performance test code [here](./test/tynisearch-performance.spec.ts)
+- You can see the performance test code [here](tests/tynisearch-performance.spec.ts)
 
 
 

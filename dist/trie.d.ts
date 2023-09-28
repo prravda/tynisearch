@@ -4,5 +4,8 @@ export declare class TrieNode {
     fail: TrieNode | null;
     output: Set<string>;
     constructor();
+    /**
+     * Add a new word to the trie
+     */
     toJSON(): Record<string, any>;
 }

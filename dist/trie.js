@@ -8,17 +8,25 @@ class TrieNode {
         this.fail = null;
         this.output = new Set();
     }
+    /**
+     * Add a new word to the trie
+     */
     toJSON() {
-        const jsonTrieNode = {
-            isLastWord: this.isLastWord,
-            children: {},
-            fail: null,
-            output: [...this.output],
-        };
-        for (const [charCode, child] of this.children) {
-            jsonTrieNode.children[charCode] = child.toJSON();
+        try {
+            const jsonTrieNode = {
+                isLastWord: this.isLastWord,
+                children: {},
+                fail: null,
+                output: [...this.output],
+            };
+            for (const [charCode, child] of this.children) {
+                jsonTrieNode.children[charCode] = child.toJSON();
+            }
+            return jsonTrieNode;
         }
-        return jsonTrieNode;
+        catch (e) {
+            throw e;
+        }
     }
 }
 exports.TrieNode = TrieNode;

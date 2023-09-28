@@ -2,9 +2,11 @@ import { TyniSearch } from "../src";
 import { readFile } from "node:fs/promises";
 
 // number of total dataset is about 700k
+// if you want to tests the performance of this library
+// change the variable numberOfWordsForTesting to what you want
 describe("performance testing for trie", () => {
   let tyniSearch = new TyniSearch();
-  let numberOfWordsForTesting = 10_000;
+  let numberOfWordsForTesting = 5_000;
   let partialSet: string[];
 
   beforeAll(async () => {

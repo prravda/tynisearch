@@ -185,6 +185,11 @@ describe("testing for trie serialization / de-serialization", () => {
     const result = parsedResult.searchInSentence(title);
     expect(result.sort()).toEqual(expectedKeywordList.sort());
   });
+
+  it("should throw an error when parsing invalid serialized result", () => {
+    const invalidSer = "invalid";
+    expect(() => TyniSearch.deserialize(invalidSer)).toThrowError();
+  });
 });
 
 describe("testing for building failure link", () => {
@@ -207,6 +212,15 @@ describe("testing for building failure link", () => {
 
   it("should assure the same result to same input", () => {
     expect(instanceA).toStrictEqual(instanceB);
+  });
+});
+
+describe("testing for getting the number of nodes", () => {
+  it('should return 7 when inserting ["abc", "abcd", "abcde", "abcdef"]', () => {
+    const tyniSearch = new TyniSearch();
+    tyniSearch.insert(["abc", "abcd", "abcde", "abcdef"]);
+
+    expect(tyniSearch.getNumberOfNodes()).toEqual(7);
   });
 });
 
