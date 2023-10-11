@@ -1,9 +1,24 @@
 "use strict";
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
+    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
+};
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
+var _TyniSearch_rootNode_accessor_storage;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TyniSearch = void 0;
 const trie_1 = require("./trie");
 class TyniSearch {
+    get rootNode() { return __classPrivateFieldGet(this, _TyniSearch_rootNode_accessor_storage, "f"); }
+    set rootNode(value) { __classPrivateFieldSet(this, _TyniSearch_rootNode_accessor_storage, value, "f"); }
     constructor(rootNode) {
+        _TyniSearch_rootNode_accessor_storage.set(this, void 0);
         this.rootNode = rootNode ? rootNode : new trie_1.TrieNode();
     }
     /**
@@ -19,11 +34,12 @@ class TyniSearch {
         }
     }
     /**
-     * Deserialize the trie from JSON.
-     * @param {string} serializedData
-     * @returns {TyniSearch} Deserialized trie.
+     * Deserialize the trie from JSON. If `failureLinkBuilding` is false, the trie will not have failure links. The default value is true.
+     * @param {string} serializedData Trie data to serialize.
+     * @param {boolean} [failureLinkBuilding=true] failureLinkBuilding
+     * @returns {TyniSearch} Deserialized trie from `JSON.stringify` processed trie.
      */
-    static deserialize(serializedData) {
+    static deserialize(serializedData, failureLinkBuilding = true) {
         try {
             const trie = new TyniSearch();
             trie.rootNode.children = new Map();
@@ -40,7 +56,7 @@ class TyniSearch {
             };
             const jsonData = JSON.parse(serializedData);
             buildTrieFromJSON(jsonData, trie.rootNode);
-            trie.buildFailureLinks();
+            failureLinkBuilding ? trie.buildFailureLinks() : null;
             return trie;
         }
         catch (e) {
@@ -62,7 +78,6 @@ class TyniSearch {
     }
     /**
      * Build failure links for aho-corasick algorithm.
-     * @private
      */
     buildFailureLinks() {
         try {
@@ -109,12 +124,13 @@ class TyniSearch {
     /**
      * Insert keywords into the trie.
      * And after deletion, rebuild failure links.
-     * @param {string[]} keywords
+     * @param {string[]} keywords Keywords to insert.
+     * @param {boolean} [failureLinkBuilding=true] failureLinkBuilding If true, rebuild failure links after insertion. The default value is true.
      */
-    insert(keywords) {
+    insert(keywords, failureLinkBuilding = true) {
         try {
             keywords.forEach((keyword) => this.insertKeyword(keyword));
-            this.buildFailureLinks();
+            failureLinkBuilding ? this.buildFailureLinks() : null;
         }
         catch (e) {
             throw e;
@@ -161,12 +177,13 @@ class TyniSearch {
     /**
      * Delete keywords from the trie.
      * And after deletion, rebuild failure links.
-     * @param {string[]} keywords
+     * @param {string[]} keywords Keywords to delete.
+     * @param {boolean} [failureLinkBuilding=true] failureLinkBuilding If true, rebuild failure links after deletion. The default value is true.
      */
-    delete(keywords) {
+    delete(keywords, failureLinkBuilding = true) {
         try {
             keywords.forEach((keyword) => this.deleteKeyword(keyword));
-            this.buildFailureLinks();
+            failureLinkBuilding ? this.buildFailureLinks() : null;
         }
         catch (e) {
             throw e;
@@ -266,3 +283,4 @@ class TyniSearch {
     }
 }
 exports.TyniSearch = TyniSearch;
+_TyniSearch_rootNode_accessor_storage = new WeakMap();

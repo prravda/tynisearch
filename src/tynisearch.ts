@@ -19,14 +19,14 @@ export class TyniSearch {
   }
 
   /**
-   * Deserialize the trie from JSON. If `buildFailureLink` is false, the trie will not have failure links. The default value is true.
+   * Deserialize the trie from JSON. If `failureLinkBuilding` is false, the trie will not have failure links. The default value is true.
    * @param {string} serializedData Trie data to serialize.
-   * @param {boolean} [buildFailureLink=true] buildFailureLink
+   * @param {boolean} [failureLinkBuilding=true] failureLinkBuilding
    * @returns {TyniSearch} Deserialized trie from `JSON.stringify` processed trie.
    */
   public static deserialize(
     serializedData: string,
-    buildFailureLink: boolean = true,
+    failureLinkBuilding: boolean = true,
   ): TyniSearch {
     try {
       const trie = new TyniSearch();
@@ -52,7 +52,7 @@ export class TyniSearch {
       const jsonData = JSON.parse(serializedData);
       buildTrieFromJSON(jsonData, trie.rootNode);
 
-      buildFailureLink ? trie.buildFailureLinks() : null;
+      failureLinkBuilding ? trie.buildFailureLinks() : null;
 
       return trie;
     } catch (e) {

@@ -1,6 +1,6 @@
 import { TrieNode } from "./trie";
 export declare class TyniSearch {
-    rootNode: TrieNode;
+    accessor rootNode: TrieNode;
     constructor(rootNode?: TrieNode);
     /**
      * Serialize the trie to JSON.
@@ -8,11 +8,12 @@ export declare class TyniSearch {
      */
     serialize(): string;
     /**
-     * Deserialize the trie from JSON.
-     * @param {string} serializedData
-     * @returns {TyniSearch} Deserialized trie.
+     * Deserialize the trie from JSON. If `failureLinkBuilding` is false, the trie will not have failure links. The default value is true.
+     * @param {string} serializedData Trie data to serialize.
+     * @param {boolean} [failureLinkBuilding=true] failureLinkBuilding
+     * @returns {TyniSearch} Deserialized trie from `JSON.stringify` processed trie.
      */
-    static deserialize(serializedData: string): TyniSearch;
+    static deserialize(serializedData: string, failureLinkBuilding?: boolean): TyniSearch;
     /**
      * Convert a character to its char code.
      * @param {string} character
@@ -21,23 +22,24 @@ export declare class TyniSearch {
     private charToIndex;
     /**
      * Build failure links for aho-corasick algorithm.
-     * @private
      */
-    private buildFailureLinks;
+    buildFailureLinks(): void;
     private insertKeyword;
     /**
      * Insert keywords into the trie.
      * And after deletion, rebuild failure links.
-     * @param {string[]} keywords
+     * @param {string[]} keywords Keywords to insert.
+     * @param {boolean} [failureLinkBuilding=true] failureLinkBuilding If true, rebuild failure links after insertion. The default value is true.
      */
-    insert(keywords: string[]): void;
+    insert(keywords: string[], failureLinkBuilding?: boolean): void;
     private deleteKeyword;
     /**
      * Delete keywords from the trie.
      * And after deletion, rebuild failure links.
-     * @param {string[]} keywords
+     * @param {string[]} keywords Keywords to delete.
+     * @param {boolean} [failureLinkBuilding=true] failureLinkBuilding If true, rebuild failure links after deletion. The default value is true.
      */
-    delete(keywords: string[]): void;
+    delete(keywords: string[], failureLinkBuilding?: boolean): void;
     /**
      * Search for a keyword in the trie.
      * @param keyword
