@@ -241,3 +241,32 @@ describe("testing for getting all keywords from trie", () => {
     );
   });
 });
+
+describe("testing for optional calculation of failure links", () => {
+  let tyniSearch: TyniSearch;
+  const keywordList = ["비비고", "비에고", "비에삼", "비비삼", "비비고라니"];
+
+  beforeEach(() => {
+    tyniSearch = new TyniSearch();
+  });
+
+  it("[ case. serde ] should throw an error when finding keywords from a string, as an result of not calculating the failure link", () => {
+    tyniSearch.insert(keywordList);
+
+    const ser = tyniSearch.serialize();
+    const deserialized = TyniSearch.deserialize(ser, false);
+
+    expect(() =>
+      deserialized.searchInSentence("비비고는 최근에 다크소울을 플레이했다."),
+    ).toThrowError();
+  });
+
+  it("[ case. insert ] should throw an error when finding keywords from a string, as an result of not calculating the failure link", () => {
+    tyniSearch.insert(keywordList, false);
+
+    expect(() =>
+      tyniSearch.searchInSentence("비비고는 최근에 다크소울을 플레이했다."),
+    ).toThrowError();
+  });
+  1;
+});
