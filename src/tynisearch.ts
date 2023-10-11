@@ -1,7 +1,7 @@
 import { TrieNode } from "./trie";
 
 export class TyniSearch {
-  rootNode: TrieNode;
+  accessor rootNode: TrieNode;
   constructor(rootNode?: TrieNode) {
     this.rootNode = rootNode ? rootNode : new TrieNode();
   }
@@ -19,11 +19,15 @@ export class TyniSearch {
   }
 
   /**
-   * Deserialize the trie from JSON.
-   * @param {string} serializedData
-   * @returns {TyniSearch} Deserialized trie.
+   * Deserialize the trie from JSON. If `buildFailureLink` is false, the trie will not have failure links. The default value is true.
+   * @param {string} serializedData Trie data to serialize.
+   * @param {boolean} [buildFailureLink=true] buildFailureLink
+   * @returns {TyniSearch} Deserialized trie from `JSON.stringify` processed trie.
    */
-  public static deserialize(serializedData: string): TyniSearch {
+  public static deserialize(
+    serializedData: string,
+    buildFailureLink: boolean = true,
+  ): TyniSearch {
     try {
       const trie = new TyniSearch();
       trie.rootNode.children = new Map<string, TrieNode>();
@@ -48,7 +52,7 @@ export class TyniSearch {
       const jsonData = JSON.parse(serializedData);
       buildTrieFromJSON(jsonData, trie.rootNode);
 
-      trie.buildFailureLinks();
+      buildFailureLink ? trie.buildFailureLinks() : null;
 
       return trie;
     } catch (e) {
@@ -71,9 +75,8 @@ export class TyniSearch {
 
   /**
    * Build failure links for aho-corasick algorithm.
-   * @private
    */
-  private buildFailureLinks(): void {
+  public buildFailureLinks(): void {
     try {
       const queue: TrieNode[] = [];
       this.rootNode.fail = null;
@@ -124,12 +127,13 @@ export class TyniSearch {
   /**
    * Insert keywords into the trie.
    * And after deletion, rebuild failure links.
-   * @param {string[]} keywords
+   * @param {string[]} keywords Keywords to insert.
+   * @param {boolean} [failureLinkBuilding=true] failureLinkBuilding If true, rebuild failure links after insertion. The default value is true.
    */
-  public insert(keywords: string[]): void {
+  public insert(keywords: string[], failureLinkBuilding: boolean = true): void {
     try {
       keywords.forEach((keyword) => this.insertKeyword(keyword));
-      this.buildFailureLinks();
+      failureLinkBuilding ? this.buildFailureLinks() : null;
     } catch (e) {
       throw e;
     }
@@ -185,12 +189,13 @@ export class TyniSearch {
   /**
    * Delete keywords from the trie.
    * And after deletion, rebuild failure links.
-   * @param {string[]} keywords
+   * @param {string[]} keywords Keywords to delete.
+   * @param {boolean} [failureLinkBuilding=true] failureLinkBuilding If true, rebuild failure links after deletion. The default value is true.
    */
-  public delete(keywords: string[]) {
+  public delete(keywords: string[], failureLinkBuilding: boolean = true) {
     try {
       keywords.forEach((keyword) => this.deleteKeyword(keyword));
-      this.buildFailureLinks();
+      failureLinkBuilding ? this.buildFailureLinks() : null;
     } catch (e) {
       throw e;
     }

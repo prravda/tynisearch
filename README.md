@@ -79,6 +79,47 @@ const result = de.serialize(titleToSearch);
 console.log(result); // ["fox", "dog"]
 ```
 
+## Optional failure link calculation
+- By default, failure links are calculated when inserting, parsing, and deleting.
+- You can disable this behavior by passing `false` to the second argument() of their methods.
+```typescript
+const wordList = ["fox", "dog", "cat", "cow", "doll"];
+const anotherWordList = ["elephant", "tiger", "lion", "wolf", "bear"];
+
+const tyniSearch = new TyniSearch();
+
+// If you should insert and delete keywords frequently,
+// you can disable failure link calculation to enhance performance.
+tyniSearch.insert(keywordList, false);
+tynisearch.delete(["fox", "cat"], false);
+tynisearch.delete(["dog", "cow"], false);
+tyniSearch.insert(anotherWordList, false);
+
+// after all, you should build failure links manually
+tyniSearch.buildFailureLinks();
+```
+
+```typescript
+const wordList = ["fox", "dog", "cat", "cow", "doll"];
+const tyniSearch = new TyniSearch();
+
+tyniSearch.insert(wordList);
+
+const ser = tyniSearch.serialize();
+
+// If you have to insert deserialize trie frequently,
+// also you can disable failure link calculation to enhance performance.
+const de = TyniSearch.deserialize(ser, false);
+
+const anotherWordList = ["elephant", "tiger", "lion", "wolf", "bear"];
+de.insert(anotherWordList, false);
+
+const secondSer = de.serialize();
+
+// like above, deserialize without buildFailureLinks param automatically builds failure links
+const secondDe = TyniSearch.deserialize(secondSer);
+```
+
 ## Misc.
 ```typescript
 const tyniSearch = new TyniSearch();
